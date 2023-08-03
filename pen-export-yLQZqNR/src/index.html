@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Barcode Battle Album</title>
+  <style>
+    body {
+      background-image: url('https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.vidaextra.com%2Fjuegos-retro%2Fbarcode-battler-consola-portatil-que-convertia-bolsas-patatas-fritas-poderosos-guerreros-magos&psig=AOvVaw3xAMaejxVDom22sYVk4Q44&ust=1691127498585000&source=images&cd=vfe&opi=89978449&ved=0CBEQjRxqFwoTCJD_-YDjv4ADFQAAAAAdAAAAABAE');
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #FFF80A;
+    }
+    label {
+      color: #FFF80A;
+      font-weight: bold;
+    }
+    input[type="text"],
+    input[type="number"],
+    select {
+      background-color: #1F2D3A;
+      border: 2px solid #FFF80A;
+      color: #fff;
+      padding: 5px;
+      margin: 5px 0;
+      width: 100%;
+    }
+    input[type="file"] {
+      margin-top: 5px;
+    }
+    .character-form {
+      display: flex;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .character-form label {
+      flex: 0 0 100%;
+    }
+    .character-form button {
+      flex: 0 0 100%;
+      max-width: 200px;
+      padding: 8px;
+      background-color: #0084FF;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    .character-form button:hover {
+      background-color: #005FCC;
+    }
+    .album-container {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .character-card {
+      background-color: #1F2D3A;
+      padding: 10px;
+      margin: 10px;
+      border-radius: 5px;
+      max-width: 200px;
+      flex: 1 0 200px;
+      position: relative;
+    }
+    .character-card img {
+      max-width: 100%;
+      height: auto;
+      border: 2px solid #FFF80A;
+      border-radius: 5px;
+    }
+    .character-details {
+      margin-top: 10px;
+      color: #FFF80A;
+    }
+    .delete-button {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background-color: #FF5858;
+      border: none;
+      color: #fff;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+    .delete-button:hover {
+      background-color: #FF3333;
+    }
+  </style>
+</head>
+<body>
+  <h1>Barcode Battle Album</h1>
+
+  <!-- Form to input character details -->
+  <div class="character-form">
+    <label for="code">Code:</label>
+    <input type="text" id="code" required>
+    <label for="name">Name:</label>
+    <input type="text" id="name" required>
+    <label for="faction">Faction:</label>
+    <select id="faction" required>
+      <option value="">Select Faction</option>
+      <option value="Salvadores">Salvadores</option>
+      <option value="Caos">Caos</option>
+      <option value="Nomdas">Nomdas</option>
+    </select>
+    <label for="type">Type:</label>
+    <select id="type" required>
+      <option value="">Select Type</option>
+      <option value="Warrior">Warrior</option>
+      <option value="Wizard">Wizard</option>
+      <option value="Item">Item</option>
+    </select>
+    <label for="hp">HP:</label>
+    <input type="number" id="hp" required>
+    <label for="attack">Attack:</label>
+    <input type="number" id="attack" required>
+    <label for="defense">Defense:</label>
+    <input type="number" id="defense" required>
+    <label for="image">Preview Image (max size: 63.5 x 88.9 mm):</label>
+    <input type="file" id="image" accept="image/*" required>
+    <button type="button" onclick="addCharacter()">Add Character</button>
+    <button type="button" onclick="saveData()">Save All Data</button>
+    <button type="button" onclick="clearAlbum()">Clear Album</button>
+  </div>
+
+  <!-- Display area for the characters -->
+  <div class="album-container" id="album"></div>
+
+  <script>
+    // Obtiene el elemento de la lista de personajes
+    const album = document.getElementById('album');
+
+    // Función para agregar un nuevo personaje al álbum
+    function addCharacter() {
+      const code = document.getElementById('code').value;
+      const name = document.getElementById('name').value;
+      const faction = document.getElementById('faction').value;
+      const type = document.getElementById('type').value;
+      const hp = document.getElementById('hp').value;
+      const attack = document.getElementById('attack').value;
+      const defense = document.getElementById('defense').value;
+      const image = document.getElementById('image').files[0];
+
+      // Validar que se hayan ingresado todos los campos
+      if (!code || !name || !faction || !type || !hp || !attack || !defense || !image) {
+        alert('Please fill in all the fields.');
+        return;
+      }
+
+      // Crea una tarjeta para el personaje
+      const characterCard = document.createElement('div');
+      characterCard.classList.add('character-card');
+
+      // Crea y muestra la imagen del personaje
+      const characterImg = document.createElement('img');
+      const reader = new FileReader();
+      reader.onload = function (event) {
+        characterImg.src = event.target.result;
+      };
+      reader.readAsDataURL(image);
+      characterCard.appendChild(characterImg);
+
+      // Crea y muestra los detalles del personaje
+      const characterDetails = document.createElement('div');
+      characterDetails.classList.add('character-details');
+      characterDetails.innerHTML = `
+        <p><strong>Code:</strong> ${code}</p>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Faction:</strong> ${faction}</p>
+        <p><strong>Type:</strong> ${type}</p>
+        <p><strong>HP:</strong> ${hp}</p>
+        <p><strong>Attack:</strong> ${attack}</p>
+        <p><strong>Defense:</strong> ${defense}</p>
+      `;
+      characterCard.appendChild(characterDetails);
+
+      // Crea el botón para eliminar el personaje
+      const deleteButton = document.createElement('button');
+      deleteButton.classList.add('delete-button');
+      deleteButton.innerText = 'Delete';
+      deleteButton.onclick = function () {
+        album.removeChild(characterCard);
+      };
+
+      characterCard.appendChild(deleteButton);
+      album.appendChild(characterCard);
+
+      // Limpia los campos del formulario después de agregar el personaje
+      document.getElementById('code').value = '';
+      document.getElementById('name').value = '';
+      document.getElementById('faction').value = '';
+      document.getElementById('type').value = '';
+      document.getElementById('hp').value = '';
+      document.getElementById('attack').value = '';
+      document.getElementById('defense').value = '';
+      document.getElementById('image').value = '';
+    }
+
+    // Función para borrar todos los personajes del álbum
+    function clearAlbum() {
+      album.innerHTML = '';
+    }
+
+    // Función para guardar todos los datos en el almacenamiento local
+    function saveData() {
+      const characters = album.innerHTML;
+      localStorage.setItem('barcodeBattleCharacters', characters);
+    }
+
+    // Al cargar la página, restaura los personajes guardados previamente (si los hay)
+    window.onload = function () {
+      const characters = localStorage.getItem('barcodeBattleCharacters');
+      if (characters) {
+        album.innerHTML = characters;
+      }
+    };
+  </script>
+</body>
+</html>
+
+
+
+
